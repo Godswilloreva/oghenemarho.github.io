@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Computer Basics - CBT Exam</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root{
+      --primary:#1e88e5;
+      --dark:#123;
+      --card:#fff;
+      --success:#2ecc71;
+      --danger:#e74c3c;
+      --muted:#6c7a89;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+      background: linear-gradient(135deg,#0f1724 0%, #0b486b 100%);
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      color:#0f1724;
+    }
+    .wrap{
+      width:100%;
+      max-width:900px;
+    }
+    .card{
+      background:var(--card);
+      border-radius:14px;
+      box-shadow:0 12px 40px rgba(3,10,18,0.45);
+      overflow:hidden;
+      animation:pop .4s ease;
+    }
+    @keyframes pop{from{opacity:0; transform:translateY(12px)}to{opacity:1; transform:none}}
+    .header{
+      background:linear-gradient(90deg,var(--primary),#2bb6f0);
+      color:white;
+      padding:18px 22px;
+    }
+    .header h1{margin:0;font-size:20px;letter-spacing:0.6px}
+    .header p{margin:6px 0 0;font-size:13px;opacity:0.95}
+    .content{
+      padding:26px;
+    }
+    .center{
+      text-align:center;
+    }
+    .muted{color:var(--muted)}
+    .big{font-size:18px;font-weight:600}
+    .btn{
+      display:inline-block;
+      background:var(--primary);
+      color:white;
+      padding:12px 16px;
+      border-radius:10px;
+      border:none;
+      cursor:pointer;
+      font-size:15px;
+      text-decoration:none;
+      transition:transform .12s ease, box-shadow .12s ease;
+    }
+    .btn:hover{transform:translateY(-3px)}
+    .ghost{background:transparent;color:var(--primary);border:2px solid rgba(30,136,229,.12)}
+    .grid{display:grid;gap:12px}
+    .options{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+    .option-btn{
+      padding:14px;
+      border-radius:10px;
+      border:2px solid rgba(0,0,0,0.06);
+      cursor:pointer;
+      font-weight:700;
+      background:linear-gradient(180deg,#fafafa,#f1f3f5);
+      box-shadow:0 6px 14px rgba(16,24,40,0.04);
+    }
+    .option-btn.selected{outline:3px solid rgba(30,136,229,0.18)}
+    #timer{
+      font-weight:800;
+      font-size:18px;
+      color:var(--danger);
+      margin-top:12px;
+    }
+    input[type="password"]{
+      width:95%;
+      padding:12px;
+      border-radius:9px;
+      border:2px solid #e8eef6;
+      font-size:16px;
+    }
+    .question-box{background:#fbfdff;padding:18px;border-radius:12px;border:1px solid #eef6ff}
+    .footer{
+      padding:16px 26px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+      background:linear-gradient(180deg, rgba(0,0,0,0.02), transparent);
+    }
+    .hidden{display:none}
+    .review-list{max-height:360px;overflow:auto;padding:8px}
+    .review-item{padding:10px;border-radius:8px;border:1px solid #f0f4f8;margin-bottom:8px;background:#fff}
+    .right{color:var(--success);font-weight:700}
+    .wrong{color:var(--danger);font-weight:700}
+    .small{font-size:13px;color:var(--muted)}
+    .edit-btn{background:#fff;border:1px solid rgba(0,0,0,0.06);padding:6px 10px;border-radius:8px;cursor:pointer}
+    @media (max-width:640px){
+      .options{grid-template-columns:1fr}
+      .header h1{font-size:16px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+
+      <!-- Header (always visible inside card) -->
+      <div class="header">
+        <h1>OGHENEMARHO — COMPUTER BASICS CLASS</h1>
+        <p>FIRST CBT ONLINE EXAM • PROMOTION TO MORE ADVANCED AFTER THIS • PASS AT LEAST 95%</p>
+      </div>
+
+      <!-- Password Screen -->
+      <div class="content center" id="password-screen">
+        <p class="muted">Enter the exam password to continue</p>
+        <div style="margin:14px 0">
+          <input id="examPassword" type="password" placeholder="Enter password here" />
+        </div>
+        <div style="margin-bottom:10px">
+          <button class="btn" onclick="checkPassword()">Submit Password</button>
+        </div>
+        <p id="pw-error" class="small" style="color:var(--danger);display:none">Incorrect password — try again.</p>
+        <p class="small muted">Password provided by teacher.</p>
+      </div>
+
+      <!-- Quiz Screen -->
+      <div class="content hidden" id="quiz-screen">
+        <div class="question-box">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+            <div style="flex:1 1 60%">
+              <div class="small muted">Question <span id="qIndex">1</span> of <span id="qTotal">20</span></div>
+              <div id="question-text" class="big" style="margin-top:8px">Question goes here</div>
+            </div>
+            <div style="min-width:140px;text-align:right">
+              <div id="timer">Time left: 10s</div>
+              <div class="small muted" style="margin-top:6px">Select A, B or C</div>
+            </div>
+          </div>
+
+          <div class="options" style="margin-top:12px">
+            <button id="opt0" class="option-btn" onclick="selectAnswer(0)"></button>
+            <button id="opt1" class="option-btn" onclick="selectAnswer(1)"></button>
+            <button id="opt2" class="option-btn" onclick="selectAnswer(2)"></button>
+            <button id="opt3" class="option-btn hidden" onclick="selectAnswer(3)"></button>
+          </div>
+
+        </div>
+
+        <div style="display:flex;gap:12px;justify-content:space-between;margin-top:18px;flex-wrap:wrap">
+          <div>
+            <button class="btn ghost" onclick="prevQuestion()" id="prevBtn">Previous</button>
+            <button class="btn ghost" onclick="nextQuestionManual()" id="nextBtn">Skip / Next</button>
+          </div>
+          <div>
+            <button class="btn" onclick="goToReview()">Cross-check & Submit</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Review Screen -->
+      <div class="content hidden" id="review-screen">
+        <h2 style="margin-top:0">Cross-check your answers</h2>
+        <p class="small muted">Please review your answers below. Click <strong>Edit</strong> to change an answer (you'll be returned to that question and timer will restart). When satisfied click <strong>Submit</strong>.</p>
+
+        <div class="review-list" id="reviewList"></div>
+
+        <div style="display:flex;gap:12px;justify-content:space-between;align-items:center;margin-top:12px;flex-wrap:wrap">
+          <div class="small muted" id="reviewSummary"></div>
+          <div>
+            <button class="btn ghost" onclick="returnToQuiz()">Back to Quiz</button>
+            <button class="btn" onclick="submitExam()">Submit</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Result Screen -->
+      <div class="content hidden center" id="result-screen">
+        <h2 id="final-title">Exam Completed</h2>
+        <p id="final-score" class="big"></p>
+        <p id="final-remark" class="small"></p>
+        <div style="margin-top:12px">
+          <button class="btn" onclick="restartExam()">Try Again</button>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="small muted">EXAM BY: OGHENEMARHO</div>
+        <div class="small muted">Powered by Teacher</div>
+      </div>
+
+    </div>
+  </div>
+
+<script>
+/* PASSWORD */
+const PASSWORD = "IAMOREVA";
+
+/* QUESTIONS (exact as provided) */
+const questions = [
+  { q:"How many type of CPU do we have", opts:["2","3","1","4"], answer:0 }, // 2
+  { q:"What are the names of CPU (processor) you know", opts:["AMD and INTEL","AMD and AIRTEL","AND and INTEL","AMD and INTEL"], answer:0 },
+  { q:"How do you upgrade or increase the ram in the system that has only one ram slot", opts:["By inserting a higher ram","By telling the ram inside with your voice to increase","By removing the ram and break it into two","By inserting a higher ram this is the answer"], answer:0 },
+  { q:"Which command should you give to your system when pressing the window 🪟+ R button to look for hidden virus", opts:[".%tmdjop"," temp %",".%temp%",".%temmp%"], answer:2 },
+  { q:"What is the full meaning of AMD", opts:["advamce micro","advance Micro Vices","advance Micro devices","adevance micoro Device"], answer:2 },
+  { q:"What is the shortcut key to check the properties of your own laptop", opts:["ALT + ENTER","WINDOWS + BACKSPACE","WINDOWS + ENTER","ALT + WINDOWS+ENTER"], answer:0 },
+  { q:"What exactly is Mavis Beacon used for.", opts:["For playing football games","for typing lessons","for typing and playing games only","for both typing and playing games"], answer:1 },
+  { q:"What is the full meaning of HD or HDD", opts:["HARD DISK DRIVE OR HARD DISK","HARD DISCK DRIVER","HDAR DISK DIVE"], answer:0 },
+  { q:"All these are types of virus except one", opts:["Ransomware","MALWARE","trojan","Marho"], answer:3 },
+  { q:"Which of the networks indicate Internet", opts:["LAN","MAN","WAN","PAN"], answer:2 },
+  { q:"Remove Hibernate power option from your laptop you computer home teacher will activate it back", opts:["(A) Done","(B) Not Done","(C) I don't know"], answer:0 },
+  { q:"Add another user to your laptop, without password, name the user , Exam and I", opts:["Add user 'Exam'","Add user 'I'","Don't add"], answer:0 },
+  { q:"What exactly is Internet", opts:["a place where we go and get movies from","a place where we get all informations from and lots more.","a place where we buy bigger bread from","a place where we learn to hack"], answer:1 },
+  { q:"What is RDP", opts:["remote Desktop protocol(connection)","remote laptop protector","remte Desktop protocol",".remote Deskp protocol"], answer:0 },
+  { q:"All laptop has two ram expansion slot", opts:["true","false"], answer:1 },
+  { q:"Below are types of System software except one", opts:["Windows","Mac OS","Linux","uncle Godswil OS"], answer:3 },
+  { q:"What is UEFI used for", opts:["to check if all the hardware components are in place","to check if sexy is at home","to check if only the micro soft word is working","to check if only the CMOS battery is working"], answer:0 },
+  { q:"What is the full meaning of BIOS", opts:["basic input output system","Basic iput utput system","Basic Iinput Outtput System","Basic Input Oytput system"], answer:0 },
+  { q:"What is CPU is your laptop using", opts:["AMD","INTEL","AND","AMND","NDA"], answer:0 },
+  { q:"What is the function of the Bluetooth, extranet, and intranet, what similarities do they have", opts:["Shot range of connection amongst users, co workers and within individuals","they have no similarities","I have forgotten","Wait let me think"], answer:0 }
+];
+
+/* STATE */
+let current = 0;
+let answers = Array(questions.length).fill(null); // chosen option index or null
+let timerId = null;
+let timeLeft = 10;
+
+/* ELEMENTS */
+const pwScreen = document.getElementById('password-screen');
+const quizScreen = document.getElementById('quiz-screen');
+const reviewScreen = document.getElementById('review-screen');
+const resultScreen = document.getElementById('result-screen');
+
+const qIndexEl = document.getElementById('qIndex');
+const qTotalEl = document.getElementById('qTotal');
+const questionText = document.getElementById('question-text');
+const timerEl = document.getElementById('timer');
+const optEls = [document.getElementById('opt0'),document.getElementById('opt1'),document.getElementById('opt2'),document.getElementById('opt3')];
+
+qTotalEl.innerText = questions.length;
+
+/* PASSWORD CHECK */
+function checkPassword(){
+  const val = document.getElementById('examPassword').value.trim();
+  const err = document.getElementById('pw-error');
+  if(val === PASSWORD){
+    err.style.display = 'none';
+    pwScreen.classList.add('hidden');
+    quizScreen.classList.remove('hidden');
+    current = 0;
+    showQuestion();
+  } else {
+    err.style.display = 'block';
+  }
+}
+
+/* SHOW QUESTION */
+function showQuestion(){
+  clearInterval(timerId);
+  // bounds
+  if(current < 0) current = 0;
+  if(current >= questions.length){
+    // go to review
+    goToReview();
+    return;
+  }
+  const Q = questions[current];
+  qIndexEl.innerText = current + 1;
+  questionText.innerText = Q.q;
+  // show options (up to 4)
+  for(let i=0;i<4;i++){
+    if(typeof Q.opts[i] !== 'undefined'){
+      optEls[i].classList.remove('hidden');
+      optEls[i].innerText = String.fromCharCode(65+i) + ". " + Q.opts[i];
+      optEls[i].classList.toggle('selected', answers[current] === i);
+    } else {
+      optEls[i].classList.add('hidden');
+    }
+  }
+  // show timer
+  timeLeft = 60;
+  timerEl.innerText = `Time left: ${timeLeft}s`;
+  timerId = setInterval(()=>{
+    timeLeft--;
+    timerEl.innerText = `Time left: ${timeLeft}s`;
+    if(timeLeft <= 0){
+      clearInterval(timerId);
+      // auto next
+      current++;
+      showQuestion();
+    }
+  },1000);
+}
+
+/* SELECT ANSWER */
+function selectAnswer(idx){
+  // record answer, stop timer, move next
+  answers[current] = idx;
+  // mark selection UI
+  for(let i=0;i<4;i++){
+    optEls[i].classList.toggle('selected', answers[current] === i);
+  }
+  clearInterval(timerId);
+  // short delay to let kid see selection, then next
+  setTimeout(()=> {
+    current++;
+    showQuestion();
+  }, 300);
+}
+
+/* MANUAL NEXT / PREV */
+function nextQuestionManual(){
+  clearInterval(timerId);
+  current++;
+  if(current >= questions.length) { goToReview(); return; }
+  showQuestion();
+}
+function prevQuestion(){
+  clearInterval(timerId);
+  current = Math.max(0, current-1);
+  showQuestion();
+}
+
+/* GO TO REVIEW (Cross-check) */
+function goToReview(){
+  clearInterval(timerId);
+  quizScreen.classList.add('hidden');
+  reviewScreen.classList.remove('hidden');
+  // build review list
+  const list = document.getElementById('reviewList');
+  list.innerHTML = '';
+  let correctCount = 0;
+  questions.forEach((q, i) => {
+    const chosen = answers[i];
+    const isCorrect = (chosen !== null && chosen === q.answer);
+    if(isCorrect) correctCount++;
+    const item = document.createElement('div');
+    item.className = 'review-item';
+    item.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+        <div style="flex:1">
+          <div style="font-weight:700">Q${i+1}. ${q.q}</div>
+          <div class="small" style="margin-top:6px">Your answer: <strong>${ chosen===null ? 'No answer' : ( (q.opts[chosen] || '') ) }</strong></div>
+          <div class="small" style="margin-top:4px">Correct answer: <strong>${ q.opts[q.answer] }</strong></div>
+        </div>
+        <div style="text-align:right;min-width:120px">
+          <div class="${isCorrect ? 'right' : 'wrong'}">${isCorrect ? 'Correct' : 'Wrong'}</div>
+          <div style="margin-top:10px">
+            <button class="edit-btn" onclick="editQuestion(${i})">Edit</button>
+          </div>
+        </div>
+      </div>
+    `;
+    list.appendChild(item);
+  });
+  const summary = document.getElementById('reviewSummary');
+  summary.innerText = `Answered: ${answers.filter(a=>a!==null).length} • Correct: ${correctCount} • Total: ${questions.length}`;
+}
+
+/* Edit from review */
+function editQuestion(index){
+  reviewScreen.classList.add('hidden');
+  quizScreen.classList.remove('hidden');
+  current = index;
+  showQuestion();
+}
+
+/* Return to quiz without editing */
+function returnToQuiz(){
+  reviewScreen.classList.add('hidden');
+  quizScreen.classList.remove('hidden');
+  // go to first unanswered or current
+  let firstUnanswered = answers.findIndex(a=>a===null);
+  if(firstUnanswered === -1) firstUnanswered = current < questions.length ? current : 0;
+  current = firstUnanswered;
+  showQuestion();
+}
+
+/* SUBMIT: open mailto with details */
+function submitExam(){
+  // compute results
+  let correct = 0;
+  const lines = [];
+  questions.forEach((q,i) => {
+    const chosen = answers[i];
+    const isCorrect = (chosen !== null && chosen === q.answer);
+    if(isCorrect) correct++;
+    const chosenText = chosen === null ? 'No answer' : (q.opts[chosen] || 'Invalid');
+    const status = isCorrect ? 'Correct' : 'Wrong';
+    lines.push(`Q${i+1}: ${status} — Your answer: ${chosenText}`);
+  });
+  const percent = Math.round((correct / questions.length) * 100);
+  const scoreLine = `Score: ${correct} / ${questions.length} (${percent}%)`;
+  const passLine = percent >= 95 ? "Result: PASS — Promotion granted" : "Result: FAIL — Not yet promoted";
+  // Build email body
+  let body = `Student: OGHENEMARHO\nTopic: COMPUTER BASICS CLASS\n\n${lines.join('\n')}\n\n${scoreLine}\n${passLine}\n\nRegards,\nTeacher`;
+  const subject = "Am done sir.";
+  const mailto = `mailto:iamorevaofficial@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  // Open mail client
+  window.location.href = mailto;
+  // Also show result on the page
+  reviewScreen.classList.add('hidden');
+  resultScreen.classList.remove('hidden');
+  document.getElementById('final-score').innerText = scoreLine;
+  document.getElementById('final-remark').innerText = passLine;
+  document.getElementById('final-title').innerText = percent >= 95 ? "✅ Congratulations!" : "Exam Submitted";
+}
+
+/* RESTART */
+function restartExam(){
+  answers = Array(questions.length).fill(null);
+  current = 0;
+  reviewScreen.classList.add('hidden');
+  resultScreen.classList.add('hidden');
+  pwScreen.classList.remove('hidden');
+  quizScreen.classList.add('hidden');
+  document.getElementById('examPassword').value = '';
+  window.scrollTo(0,0);
+}
+
+/* Make sure keyboard Enter on password works */
+document.getElementById('examPassword').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter') checkPassword();
+});
+</script>
+</body>
+</html>
